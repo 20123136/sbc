@@ -101,8 +101,23 @@
         this.page = data.page;
       },
       filterList:function () {
-        this.gateway=this.gateway.filter((list)=>{
-          return list.gwname.match(this.search)
+        this.$http.post('/conf/rest/gateway/query',{keywords:this.search}).then((res)=>{
+          this.gateway=[];
+          var monitorData=res.data.gateway;
+          if(monitorData instanceof Array){
+            this.gateway=res.data.gateway;
+          }else{
+            this.gateway.push(res.data.gateway);
+          }
+          for(var key in this.gateway){
+            this.gateway[key].opt=false;
+            if(this.gateway[key].register=="true"){
+              this.gateway[key].register="是"
+            }else{
+              this.gateway[key].register="否"
+            }
+          }
+        }).catch((res)=>{
         })
       }
     },

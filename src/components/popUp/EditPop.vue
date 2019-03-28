@@ -24,7 +24,7 @@
           <input type="text" v-model="receiveData.domain">
         </div>
         <div class="edit-info">
-          <label>录音处理类型</label>
+          <label>路由处理类型</label>
           <select v-model="myValue">
             <option value="0">分机</option>
             <option value="1">外部路由</option>

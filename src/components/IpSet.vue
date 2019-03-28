@@ -67,7 +67,13 @@
             console.log(res,"请求失败")
           })
           this.$http.post('/conf/rest/acl/list',{ startPage:this.page-1, pageNum:this.pageNum }).then((res)=>{
-            this.acl=res.data.acl;
+            this.acl=[];
+            var monitorData=res.data.acl;
+            if(monitorData instanceof Array){
+              this.acl=res.data.acl;
+            }else{
+              this.acl.push(res.data.acl);
+            }
             for(var key in this.acl){
               this.acl[key].opt=false;
               if(this.acl[key].type=='allow'){
@@ -85,8 +91,23 @@
           this.page = data.page;
         },
         filterList:function () {
-          this.acl=this.acl.filter((list)=>{
-            return list.cidr.match(this.search)
+          this.$http.post('/conf/rest/acl/query',{keywords:this.search}).then((res)=>{
+            this.acl=[];
+            var monitorData=res.data.acl;
+            if(monitorData instanceof Array){
+              this.acl=res.data.acl;
+            }else{
+              this.acl.push(res.data.acl);
+            }
+            for(var key in this.acl){
+              this.acl[key].opt=false;
+              if(this.acl[key].type=='allow'){
+                this.acl[key].type="允许"
+              }else if(this.acl[key].type=='deny'){
+                this.acl[key].type="拒绝"
+              }
+            }
+          }).catch((res)=>{
           })
         }
       },

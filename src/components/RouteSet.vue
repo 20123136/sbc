@@ -106,8 +106,30 @@
         this.page = data.page;
       },
       filterList:function () {
-        this.routePattern=this.routePattern.filter((list)=>{
-            return list.domain.match(this.search)
+        this.$http.post('/conf/rest/routepattern/query',{ keywords:this.search}).then((res)=>{
+          this.routePattern=res.data.routePattern;
+          for(var key in this.routePattern){
+            var typeN=this.routePattern[key].destType;
+            this.routePattern[key].opt=false;
+            if(typeN==0){
+              this.routePattern[key].typeR='分机';
+            }else if(typeN==1){
+              this.routePattern[key].typeR='外部路由'
+            }else if(typeN==2){
+              this.routePattern[key].typeR='网关'
+            }else if(typeN==3){
+              this.routePattern[key].typeR='自定义路由'
+            }else if(typeN==4){
+              this.routePattern[key].typeR='语音留言'
+            }else if(typeN==5){
+              this.routePattern[key].typeR='组内代接'
+            }else if(typeN==6){
+              this.routePattern[key].typeR='满意度'
+            }else if(typeN==7){
+              this.routePattern[key].typeR='内置IVR'
+            }
+          }
+        }).catch((res)=>{
         })
       }
     },

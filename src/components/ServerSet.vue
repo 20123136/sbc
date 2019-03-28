@@ -88,14 +88,23 @@
           }).catch((res)=>{
             console.log(res,"请求失败")
           })
-
         },
         goPage (data) {
           this.page = data.page;
         },
         filterList:function () {
-          this.server=this.server.filter((list)=>{
-            return list.switchName.match(this.search)
+          this.$http.post('/conf/rest/switch/query',{keywords:this.search}).then((res)=>{
+            this.server=[]
+            var monitorData=res.data.switchInstance;
+            if(monitorData instanceof Array){
+              this.server=res.data.switchInstance;
+            }else{
+              this.server.push(res.data.switchInstance);
+            }
+            for(var key in this.server){
+              this.server[key].opt=false;
+            }
+          }).catch((res)=>{
           })
         }
       },

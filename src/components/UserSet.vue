@@ -85,7 +85,6 @@
               this.user[key].role="普通用户"
             }
           }
-          console.log(this.user)
         }).catch((res)=>{
           console.log(res,"请求失败")
         })
@@ -95,8 +94,21 @@
         this.page = data.page;
       },
       filterList:function () {
-        this.user=this.user.filter((list)=>{
-          return list.userName.match(this.search)
+        this.$http.post('/conf/rest/user/query',{keywords:this.search}).then((res)=>{
+          this.user=[];
+          if(res.data.user instanceof Array){
+            this.user=res.data.user;
+          }else{
+            this.user.push(res.data.user);
+          }
+          for(var key in this.user){
+            if(this.user[key].role=="是"){
+              this.user[key].role="管理员"
+            }else if(this.user[key].role=="否"){
+              this.user[key].role="普通用户"
+            }
+          }
+        }).catch((res)=>{
         })
       }
     },
