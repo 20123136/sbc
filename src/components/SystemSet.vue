@@ -2,58 +2,93 @@
     <div id="set">
       <div class="page-section">
         <div class="search">
-          <input type="text">
-          <input type="button" value="搜索">
+          <input type="text" v-model="search" placeholder="请输入id搜索">
+          <input type="button" value="搜索" @click="filterList">
         </div>
-        <input type="button" value="添加">
       </div>
       <div class="table-box">
         <table class="table">
           <tr>
-            <th>交换机名</th>
-            <th>交换机IP</th>
-            <th>CPU</th>
-            <th>STACK</th>
-            <th>呼叫总量</th>
-            <th>负载最大量</th>
-            <th>当前呼叫数目</th>
-            <th>负载大小</th>
-            <th>运行时间</th>
-            <th>运行状态</th>
-            <th></th>
+            <th>路由ID</th>
+            <th>外部IP</th>
+            <th>外部端口</th>
+            <th>内部IP</th>
+            <th>内部端口</th>
+            <th class="opt-w">操作</th>
           </tr>
-          <tr>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td class="opt">
-              <span v-on:click="opt=!opt">...</span>
-              <div class="opt-main" v-show="opt">
-                <a>开始</a>
-                <a>暂停</a>
-              </div>
+          <tr v-for="(item,index) in routePattern" :key="index">
+            <td>{{item.id}}</td>
+            <td>{{item.externalIp}}</td>
+            <td>{{item.externalPort}}</td>
+            <td>{{item.internalIp}}</td>
+            <td>{{item.internalPort}}</td>
+            <td class="opt" @click="isShow(index,item)">
+              <span><div class="opt-main" v-show="item.opt">
+                <router-link :to="{name:'System',query:item}">编辑</router-link>
+              </div></span>
             </td>
           </tr>
         </table>
       </div>
+      <!--<pager :total-page="totalPage"-->
+             <!--:init-page="page"-->
+             <!--@go-page="goPage"></pager>-->
+      <router-view></router-view>
     </div>
 </template>
 
 <script>
+  // import pager from './vue-pager.vue'
     export default {
         name: "set",
         data(){
           return {
-            opt:false
+            page:1,
+            num:0,
+            pageNum:25,
+            routePattern:[],
+            search:'',
+          }
+        },
+      methods:{
+        isShow:function (index,item) {
+          item.opt=!item.opt;
+          this.routePattern.splice(index,item);
+        },
+        filterList:function () {
+          this.routePattern=this.routePattern.filter((list)=>{
+            return list.id.match(this.search)
+          })
+        },
+        fetchMonitor:function(){
+          this.$http.get('/conf/rest/systemConf/list').then((res)=>{
+            var monitorData=res.data.systemConf;
+            this.routePattern = [];
+            for(var key in this.routePattern){
+              this.routePattern[key].opt=false;
+            }
+            if(monitorData instanceof Array){
+              this.routePattern=res.data.systemConf;
+            }else{
+              this.routePattern.push(res.data.systemConf);
+            }
+          }).catch((res)=>{
+            console.log(res,"请求失败")
+          })
+        },
+      },
+      computed:{
+      },
+      watch:{
+        '$route'(newV,oldV){
+          if("/system"==newV.path){
+            this.fetchMonitor()
           }
         }
+      },
+      created(){
+      this.fetchMonitor()
+    }
     }
 </script>
 

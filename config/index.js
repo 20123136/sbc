@@ -6,24 +6,23 @@ const path = require('path')
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      // '/api':{
-      //   target:'http://172.16.2.229:8128/',
-      //   secure: false,
-      //   changeOrigin:true,
-      //   pathRewrite:{
-      //     '^api':''
-      //   }
-      // }
+      '/conf':{
+        target:'http://172.16.3.180:8128/',//http://172.16.2.229:8128
+        secure: false,
+        changeOrigin:true,
+        pathRewrite:{
+          '^conf':''
+        }
+      }
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST172.16.0.62
-    port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    host: '172.16.0.62', // can be overwritten by process.env.HOSTlocalhost
+    port: 8089, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,

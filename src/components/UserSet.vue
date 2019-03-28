@@ -2,59 +2,122 @@
     <div id="set">
       <div class="page-section">
         <div class="search">
-          <input type="text">
-          <input type="button" value="搜索">
+          <input type="text" v-model="search" placeholder="请输入用户名搜索">
+          <input type="button" value="搜索" @click="filterList">
         </div>
-        <input type="button" value="添加">
+        <router-link to="/user/add"><input type="button" value="添加"></router-link>
       </div>
       <div class="table-box">
         <table class="table">
           <tr>
-            <th>交换机名</th>
-            <th>交换机IP</th>
-            <th>CPU</th>
-            <th>STACK</th>
-            <th>呼叫总量</th>
-            <th>负载最大量</th>
-            <th>当前呼叫数目</th>
-            <th>负载大小</th>
-            <th>运行时间</th>
-            <th>运行状态</th>
-            <th></th>
+            <th>用户名</th>
+            <th>姓名</th>
+            <th>Email</th>
+            <th>角色</th>
+            <th>密码</th>
+            <th class="opt-w">操作</th>
           </tr>
-          <tr>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td>111</td>
-            <td class="opt">
-              <span v-on:click="opt=!opt">...</span>
-              <div class="opt-main" v-show="opt">
-                <a>开始</a>
-                <a>暂停</a>
-              </div>
+          <tr v-for="(item,index) in user" :key="index">
+            <td>{{item.userName}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.email}}</td>
+            <td>{{item.role}}</td>
+            <td>{{item.pwd}}</td>
+            <td class="opt" v-on:click="isShow(index,item)">
+              <span>
+                <div class="opt-main" v-show="item.opt">
+                  <router-link :to="{name:'userEdit',query:user[index]}">编辑</router-link>
+                  <router-link :to="{name:'deleteuser',query:user[index]}">删除</router-link>
+                </div>
+              </span>
             </td>
           </tr>
         </table>
       </div>
+      <pager :total-page="totalPage"
+             :init-page="page"
+             @go-page="goPage"></pager>
+
+      <router-view></router-view>
     </div>
 </template>
 
 <script>
-    export default {
-        name: "set",
-        data(){
-          return {
-            opt:false
+  import pager from './vue-pager.vue'
+  export default {
+    name: "set",
+    data(){
+      return {
+        page:1,
+        num:0,
+        pageNum:25,
+        user:[],
+        search:'',
+      }
+    },
+    computed: {
+      totalPage(){
+        return Math.ceil(this.num / this.pageNum);
+      }
+    },
+    methods:{
+      isShow:function (index,item) {
+        item.opt=!item.opt;
+        this.user.splice(index,item);
+      },
+      fetchMonitor:function(){
+        this.$http.get('/conf/rest/user/num').then((res)=>{
+          this.num = res.data.num;
+        }).catch((res)=>{
+          console.log(res,"请求失败")
+        })
+        this.$http.post('/conf/rest/user/list',{ startPage:this.page-1, pageNum:this.pageNum }).then((res)=>{
+          this.user=[];
+          if(res.data.user instanceof Array){
+            this.user=res.data.user;
+          }else{
+            this.user.push(res.data.user);
           }
+          for(var key in this.user){
+            if(this.user[key].role=="是"){
+              this.user[key].role="管理员"
+            }else if(this.user[key].role=="否"){
+              this.user[key].role="普通用户"
+            }
+          }
+          console.log(this.user)
+        }).catch((res)=>{
+          console.log(res,"请求失败")
+        })
+
+      },
+      goPage (data) {
+        this.page = data.page;
+      },
+      filterList:function () {
+        this.user=this.user.filter((list)=>{
+          return list.userName.match(this.search)
+        })
+      }
+    },
+    created(){
+      this.fetchMonitor()
+    },
+    watch:{
+      page:function () {
+        this.fetchMonitor()
+      },
+      '$route'(newV,oldV){
+        if("/user"==newV.path){
+          this.fetchMonitor()
         }
+      }
+    },
+
+    components:{
+      pager
     }
+  }
 </script>
 
 <style scoped>
