@@ -1,4 +1,5 @@
 import Vue from 'vue'
+//主页面
 import Router from 'vue-router'
 import RouteSet from '../components/RouteSet'
 import Index from '../components/index'
@@ -7,18 +8,21 @@ import GetwaySet from '../components/GetwaySet'
 import SystemSet from '../components/SystemSet'
 import UserSet from '../components/UserSet'
 import ServerSet from '../components/ServerSet'
+import Login from '../components/Login'
+//编辑
 import EditPop from '../components/popUp/EditPop'
 import systemEdit from '../components/popUp/systemEdit'
 import ipEdit from '../components/popUp/ipEdit'
 import getWayEdit from '../components/popUp/getWayEdit'
 import userEdit from '../components/popUp/userEdit'
 import serverEdit from '../components/popUp/serverEdit'
-import Login from '../components/Login'
+//添加
 import addRouter from '../components/popUp/addPop/addRouter'
 import addIp from '../components/popUp/addPop/addIp'
 import addGetWay from '../components/popUp/addPop/addGetWay'
 import addUser from '../components/popUp/addPop/addUser'
 import addServer from '../components/popUp/addPop/addServer'
+//删除
 import deleteRouter from '../components/popUp/deletePop/routerDelete'
 import deleteIp from '../components/popUp/deletePop/ipDelete'
 import deleteGetWay from '../components/popUp/deletePop/getWayDelete'
